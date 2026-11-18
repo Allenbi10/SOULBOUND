@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOULBOUND // Boss Fights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body { background:#080a10; background-image:radial-gradient(circle at 15% 20%,rgba(157,124,255,.16),transparent 28%),radial-gradient(circle at 85% 75%,rgba(203,242,101,.12),transparent 24%),linear-gradient(135deg,#080a10 0%,#11131d 48%,#0a1114 100%); overflow-x:hidden; }
+      body::before { content:""; position:fixed; inset:-20%; pointer-events:none; z-index:0; opacity:.2; background:repeating-linear-gradient(90deg,transparent 0 90px,rgba(103,217,200,.08) 91px 93px,transparent 94px 180px),repeating-linear-gradient(0deg,transparent 0 54px,rgba(255,82,99,.06) 55px 56px,transparent 57px 112px),repeating-linear-gradient(90deg,transparent 0 11px,rgba(255,255,255,.035) 12px 13px),repeating-linear-gradient(0deg,transparent 0 11px,rgba(255,255,255,.035) 12px 13px); background-size:180px 112px,180px 112px,13px 13px,13px 13px; animation:arcadeGlitch 7s steps(2,end) infinite; }
+      .menu-view, .fight-top, .game-layout { image-rendering:pixelated; }
+      body::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:6; opacity:0; background:repeating-linear-gradient(0deg,transparent 0 9px,rgba(203,242,101,.14) 10px 11px,transparent 12px 18px),linear-gradient(90deg,rgba(255,82,99,.15),transparent 35%,rgba(103,217,200,.12)); mix-blend-mode:screen; animation:screenGlitch 9s steps(1,end) infinite; }
+      .app-shell { position:relative; z-index:1; }
+      .scanlines { opacity:.14; background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.16) 3px,transparent 4px 6px); }
+      @keyframes arcadeGlitch { 0%,88%,100% { transform:translate(0,0); filter:hue-rotate(0deg); } 89% { transform:translate(8px,-3px); filter:hue-rotate(35deg); } 90% { transform:translate(-5px,2px); filter:hue-rotate(-25deg); } 91% { transform:translate(2px,0); } }
+      @keyframes screenGlitch { 0%,88%,100% { opacity:0; transform:translate(0); clip-path:inset(0); } 89% { opacity:.7; transform:translate(-5px,2px); clip-path:inset(18% 0 62% 0); } 90% { opacity:.25; transform:translate(6px,-1px); clip-path:inset(54% 0 22% 0); } 91% { opacity:.5; transform:translate(-2px,0); clip-path:inset(76% 0 8% 0); } 92% { opacity:0; clip-path:inset(0); } }
+      .view-hidden { display:none !important; }
+      .menu-view { min-height:calc(100vh - 100px); display:grid; place-items:center; }
+      .menu-inner { width:min(920px,100%); }
+      .menu-heading { color:var(--text); font-family:'Rubik 80s Fade', cursive; font-size:clamp(42px,7vw,82px); line-height:.95; letter-spacing:.02em; margin:0 0 42px; text-align:center; }
+      .menu-heading span { color:var(--acid); }
+      .boss-select { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:0; }
+      .boss-card { width:100%; min-height:72px; color:var(--text); font:inherit; text-align:left; appearance:none; -webkit-appearance:none; }
+      .boss-card { flex-direction:column; justify-content:center; text-align:center; gap:8px; }
+      .boss-card .card-number { display:none; }
+      .boss-card .card-name, .boss-card .card-meta, .boss-card .boss-sprite { display:block; }
+      .boss-card .card-name { order:1; }
+      .boss-card .card-name { font-family:'Rubik 80s Fade', cursive; font-size:18px; letter-spacing:.02em; }
+      .boss-card .boss-sprite { order:2; color:var(--acid); font-size:32px; line-height:1; }
+      .boss-card .card-meta { order:3; }
+      .fight-top { display:flex; align-items:center; justify-content:space-between; margin:28px 0 16px; }
+      .back-btn { background:none; border:0; color:var(--muted); cursor:pointer; font:500 10px 'DM Mono',monospace; letter-spacing:.1em; padding:0; }
+      .back-btn:hover { color:var(--text); }
+      .player-health { margin:0 0 12px; padding:12px 15px; background:var(--panel); border:1px solid var(--line); }
+      .health-label { display:flex; justify-content:space-between; color:var(--muted); font:500 10px 'DM Mono',monospace; letter-spacing:.1em; }
+      .health-track { height:7px; background:#303633; margin-top:8px; }
+      .health-track div { height:100%; width:100%; background:#ff5263; transition:width .25s; }
+      .telegraph-note { color:var(--coral); font:500 9px 'DM Mono',monospace; letter-spacing:.08em; }
+    </style>
+  </head>
+  <body>
+    <div class="scanlines"></div>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">✦</span> SOULBOUND <span class="slash">//</span> BOSS FIGHTS</div>
+        <div class="top-actions"><span class="status-dot"></span><span id="runStatus">MAIN MENU</span></div>
+      </header>
+
+      <section class="menu-view" id="mainMenu">
+        <div class="menu-inner">
+          <h1 class="menu-heading">SOULBOUND</h1>
+          <section class="boss-select" id="bossSelect"></section>
+        </div>
+      </section>
+
+      <section class="view-hidden" id="fightScreen">
+        <div class="fight-top"><button class="back-btn" id="backToMenu">← BOSS SELECT</button><span class="telegraph-note" id="turnLabel">YOUR TURN</span></div>
+        <div class="game-layout">
+          <div class="game-column">
+            <div class="player-health"><div class="health-label"><span>SOUL HEALTH</span><span id="playerHpText">5 / 5</span></div><div class="health-track"><div id="playerHpFill"></div></div></div>
+            <div class="arena-wrap">
+              <div class="arena-heading"><span><span class="live-dot"></span> ARENA</span><span id="arenaHint">ATTACK WHEN READY</span></div>
+              <div class="canvas-frame"><canvas id="gameCanvas" width="760" height="460"></canvas><div id="gameOverlay" class="game-overlay hidden"></div></div>
+            </div>
+            <div class="attack-panel">
+              <div class="attack-heading"><span>STRIKE</span><span class="hint">CLICK / SPACE</span></div>
+              <div class="timing-bar" id="timingBar"><div class="timing-zone perfect-zone"></div><div class="timing-zone good-zone"></div><div class="timing-core"></div><div class="timing-cursor" id="timingCursor"></div></div>
+              <button class="strike-btn" id="strikeBtn"><span class="strike-icon">✦</span> STRIKE <span class="strike-key">SPACE</span></button>
+            </div>
+          </div>
+          <aside class="side-column">
+            <div class="panel boss-info"><div class="panel-kicker">ADVERSARY</div><div class="boss-name-row"><div class="boss-avatar" id="bossAvatar">◈</div><div><h2 id="bossName">Verdant Warden</h2><p id="bossTitle">THE ROOTED CROWN</p></div></div><div class="stat-line"><span>VITALITY</span><span id="bossHpText">6 / 6</span></div><div class="hp-track"><div id="bossHpFill"></div></div></div>
+            <div class="panel controls"><div class="panel-title">MOVE TO DODGE</div><div class="control-row"><kbd>W A S D</kbd><span>MOVE SOUL</span></div><div class="control-row"><kbd>SPACE</kbd><span>STRIKE</span></div><div class="control-row"><kbd>R</kbd><span>RESTART</span></div></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
