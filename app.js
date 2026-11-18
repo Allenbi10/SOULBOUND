@@ -28,7 +28,7 @@ function startFight(index) {
   initBoss(index);
   $('mainMenu').classList.add('view-hidden');
   $('fightScreen').classList.remove('view-hidden');
-  $('runStatus').textContent = 'COMBAT ACTIVE';
+  $('runStatus').textContent = '';
 }
 
 function updateUI() {
